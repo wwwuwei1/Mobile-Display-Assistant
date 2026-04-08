@@ -448,8 +448,8 @@ function ProfileTab({ onAddPhone, onEditProfile, onOpenFavorites, onOpenHistory 
 
       {/* Seller Services */}
       <div className="px-5 pb-8 space-y-3">
-        <h3 className="font-bold text-gray-900 mb-2 px-1 text-sm">发布货源</h3>
-        <MenuItem icon={<Plus className="w-5 h-5 text-blue-500" />} title="发布闲置/二手机型" onClick={onAddPhone} />
+        <h3 className="font-bold text-gray-900 mb-2 px-1 text-sm">发布信息</h3>
+        <MenuItem icon={<Plus className="w-5 h-5 text-blue-500" />} title="发布机型信息" onClick={onAddPhone} />
       </div>
     </div>
   );
@@ -653,7 +653,7 @@ function PhoneDetail({ phone, onClose }: { phone: Phone, onClose: () => void }) 
                   <h4 className="font-bold text-gray-900 text-sm">{phone.name}</h4>
                   <span className="text-red-500 font-bold text-sm">¥{phone.price - i * 500}</span>
                 </div>
-                <div className="text-xs text-gray-500 mt-1">{i === 1 ? '全新未拆封 / 官方标配' : '99新 / 电池100%'}</div>
+                <div className="text-xs text-gray-500 mt-1">{i === 1 ? '全新国行 / 官方标配' : '现货速发 / 官方正品'}</div>
                 <div className="mt-2 flex justify-between items-center">
                   <div className="flex items-center text-xs text-gray-600">
                     <User className="w-3 h-3 mr-1" /> 商家_{i}892
@@ -778,9 +778,49 @@ function AddPhoneModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+function LoginScreen({ onLogin }: { onLogin: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center px-6"
+    >
+      <div className="flex-1 flex flex-col items-center justify-center w-full">
+        <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center shadow-lg mb-6">
+          <Smartphone className="w-12 h-12 text-white" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">手机信息分享平台</h1>
+        <p className="text-gray-500 text-sm mb-12">发现好机，轻松选择</p>
+
+        <button 
+          onClick={onLogin}
+          className="w-full bg-[#07C160] text-white font-bold py-3.5 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-md shadow-green-200 mb-4"
+        >
+          <svg viewBox="0 0 1024 1024" className="w-6 h-6 mr-2" fill="currentColor">
+            <path d="M683.5 359.4C683.5 244.3 568.5 151 426.8 151 285 151 170 244.3 170 359.4c0 65.5 34.4 124.3 88.5 163.5l-23.6 71.4 84.6-42.3c33.6 9.4 69.5 14.6 107.3 14.6 141.8 0 256.7-93.3 256.7-208.4z m-351.4-36.4c-19.1 0-34.6-15.5-34.6-34.6s15.5-34.6 34.6-34.6 34.6 15.5 34.6 34.6-15.5 34.6-34.6 34.6z m204.6 0c-19.1 0-34.6-15.5-34.6-34.6s15.5-34.6 34.6-34.6 34.6 15.5 34.6 34.6-15.5 34.6-34.6 34.6z M854 586.3c0-93.3-93.3-169.3-208.4-169.3-5.2 0-10.4 0.2-15.5 0.5 16.5 25.4 26.1 55.4 26.1 87.2 0 126.8-124.5 229.6-277.8 229.6-26.7 0-52.4-3.5-76.7-9.8 28.5 54.3 90.6 91.1 162.2 91.1 30.7 0 59.9-4.2 87.2-11.8l68.8 34.4-19.2-58c44-31.7 71.8-79.5 71.8-132.5z m-243.6-26.1c-15.5 0-28.1-12.6-28.1-28.1s12.6-28.1 28.1-28.1 28.1 12.6 28.1 28.1-12.6 28.1-28.1 28.1z m138.1 0c-15.5 0-28.1-12.6-28.1-28.1s12.6-28.1 28.1-28.1 28.1 12.6 28.1 28.1-12.6 28.1-28.1 28.1z" />
+          </svg>
+          微信一键登录
+        </button>
+      </div>
+
+      <div className="pb-8 text-center">
+        <label className="flex items-center justify-center text-xs text-gray-400">
+          <input type="checkbox" className="mr-1.5 rounded text-blue-600 focus:ring-blue-500" defaultChecked />
+          <span>我已阅读并同意</span>
+          <a href="#" className="text-blue-600">《用户协议》</a>
+          <span>和</span>
+          <a href="#" className="text-blue-600">《隐私政策》</a>
+        </label>
+      </div>
+    </motion.div>
+  );
+}
+
 // --- Main App ---
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [selectedPhone, setSelectedPhone] = useState<Phone | null>(null);
   const [showAllPhones, setShowAllPhones] = useState(false);
@@ -792,81 +832,87 @@ export default function App() {
   return (
     <div className="flex justify-center bg-gray-200 min-h-screen font-sans">
       <div className="w-full max-w-md bg-white h-screen flex flex-col relative shadow-2xl overflow-hidden">
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto pb-20">
-          {activeTab === 'home' && <HomeTab onSelectPhone={setSelectedPhone} onViewAll={() => setShowAllPhones(true)} />}
-          {activeTab === 'recommend' && <RecommendTab />}
-          {activeTab === 'profile' && (
-            <ProfileTab 
-              onAddPhone={() => setShowAddPhone(true)} 
-              onEditProfile={() => setShowEditProfile(true)} 
-              onOpenFavorites={() => setShowFavorites(true)}
-              onOpenHistory={() => setShowHistory(true)}
-            />
-          )}
-        </div>
+        {!isLoggedIn ? (
+          <LoginScreen onLogin={() => setIsLoggedIn(true)} />
+        ) : (
+          <>
+            {/* Main Content Area */}
+            <div className="flex-1 overflow-y-auto pb-20">
+              {activeTab === 'home' && <HomeTab onSelectPhone={setSelectedPhone} onViewAll={() => setShowAllPhones(true)} />}
+              {activeTab === 'recommend' && <RecommendTab />}
+              {activeTab === 'profile' && (
+                <ProfileTab 
+                  onAddPhone={() => setShowAddPhone(true)} 
+                  onEditProfile={() => setShowEditProfile(true)} 
+                  onOpenFavorites={() => setShowFavorites(true)}
+                  onOpenHistory={() => setShowHistory(true)}
+                />
+              )}
+            </div>
 
-        {/* Bottom Navigation */}
-        <nav className="absolute bottom-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-200 flex justify-around py-2 pb-6 z-40">
-          <NavItem icon={<Home className="w-6 h-6" />} label="首页" isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} />
-          <NavItem icon={<Sparkles className="w-6 h-6" />} label="推荐" isActive={activeTab === 'recommend'} onClick={() => setActiveTab('recommend')} />
-          <NavItem icon={<User className="w-6 h-6" />} label="我的" isActive={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
-        </nav>
+            {/* Bottom Navigation */}
+            <nav className="absolute bottom-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-200 flex justify-around py-2 pb-6 z-40">
+              <NavItem icon={<Home className="w-6 h-6" />} label="首页" isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} />
+              <NavItem icon={<Sparkles className="w-6 h-6" />} label="推荐" isActive={activeTab === 'recommend'} onClick={() => setActiveTab('recommend')} />
+              <NavItem icon={<User className="w-6 h-6" />} label="我的" isActive={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
+            </nav>
 
-        {/* All Phones Modal */}
-        <AnimatePresence>
-          {showAllPhones && (
-            <AllPhonesList 
-              onClose={() => setShowAllPhones(false)} 
-              onSelectPhone={setSelectedPhone} 
-            />
-          )}
-        </AnimatePresence>
+            {/* All Phones Modal */}
+            <AnimatePresence>
+              {showAllPhones && (
+                <AllPhonesList 
+                  onClose={() => setShowAllPhones(false)} 
+                  onSelectPhone={setSelectedPhone} 
+                />
+              )}
+            </AnimatePresence>
 
-        {/* Phone Detail Modal */}
-        <AnimatePresence>
-          {selectedPhone && (
-            <PhoneDetail phone={selectedPhone} onClose={() => setSelectedPhone(null)} />
-          )}
-        </AnimatePresence>
+            {/* Phone Detail Modal */}
+            <AnimatePresence>
+              {selectedPhone && (
+                <PhoneDetail phone={selectedPhone} onClose={() => setSelectedPhone(null)} />
+              )}
+            </AnimatePresence>
 
-        {/* Add Phone Modal */}
-        <AnimatePresence>
-          {showAddPhone && (
-            <AddPhoneModal onClose={() => setShowAddPhone(false)} />
-          )}
-        </AnimatePresence>
+            {/* Add Phone Modal */}
+            <AnimatePresence>
+              {showAddPhone && (
+                <AddPhoneModal onClose={() => setShowAddPhone(false)} />
+              )}
+            </AnimatePresence>
 
-        {/* Edit Profile Modal */}
-        <AnimatePresence>
-          {showEditProfile && (
-            <EditProfileModal onClose={() => setShowEditProfile(false)} />
-          )}
-        </AnimatePresence>
+            {/* Edit Profile Modal */}
+            <AnimatePresence>
+              {showEditProfile && (
+                <EditProfileModal onClose={() => setShowEditProfile(false)} />
+              )}
+            </AnimatePresence>
 
-        {/* Favorites Modal */}
-        <AnimatePresence>
-          {showFavorites && (
-            <PhoneListModal 
-              title="我的收藏" 
-              phones={MOCK_PHONES.slice(0, 2)} 
-              onClose={() => setShowFavorites(false)} 
-              onSelectPhone={setSelectedPhone} 
-            />
-          )}
-        </AnimatePresence>
+            {/* Favorites Modal */}
+            <AnimatePresence>
+              {showFavorites && (
+                <PhoneListModal 
+                  title="我的收藏" 
+                  phones={MOCK_PHONES.slice(0, 2)} 
+                  onClose={() => setShowFavorites(false)} 
+                  onSelectPhone={setSelectedPhone} 
+                />
+              )}
+            </AnimatePresence>
 
-        {/* History Modal */}
-        <AnimatePresence>
-          {showHistory && (
-            <PhoneListModal 
-              title="浏览足迹" 
-              phones={MOCK_PHONES.slice(1, 4)} 
-              onClose={() => setShowHistory(false)} 
-              onSelectPhone={setSelectedPhone} 
-            />
-          )}
-        </AnimatePresence>
+            {/* History Modal */}
+            <AnimatePresence>
+              {showHistory && (
+                <PhoneListModal 
+                  title="浏览足迹" 
+                  phones={MOCK_PHONES.slice(1, 4)} 
+                  onClose={() => setShowHistory(false)} 
+                  onSelectPhone={setSelectedPhone} 
+                />
+              )}
+            </AnimatePresence>
+          </>
+        )}
       </div>
     </div>
   );
